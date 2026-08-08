@@ -1,0 +1,43 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# next.js
+/.next/
+/out/
+/build
+
+# local env files
+.env.local
+.env.*.local
+
+# production
+/coverage
+
+# editor settings
+.vscode/
+.idea/
+
+# misc
+.DS_Store
+*.pem
+*.log
+
+# system files
+Thumbs.db
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# deployment
+.vercel
+
+# package manager lockfiles (optional)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml

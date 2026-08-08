@@ -1,0 +1,14 @@
+name: Autonomous Loop Run
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'  # Runs every 30 minutes
+  workflow_dispatch:      # Allows manual trigger from GitHub UI
+
+jobs:
+  run-cycle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Agent Cron Endpoint
+        run: |
+          curl -fsS -X GET "https://${{ secrets.APP_DOMAIN }}/api/agent/cron?secret=${{ secrets.CRON_SECRET }}"
