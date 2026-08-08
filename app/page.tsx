@@ -1,15 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Activity,
   Clock,
-  Settings,
-  Layers,
   Shield,
   FileText,
-  CheckCircle2,
   XCircle,
   Plus,
   Terminal,
@@ -22,7 +19,6 @@ import {
   Info,
   Globe,
   Database,
-  Eye,
   AlertCircle
 } from 'lucide-react';
 
@@ -134,11 +130,10 @@ export default function Dashboard() {
   };
 
   // Fetch real agent and posts data
-  const fetchRealData = async () => {
+  const fetchRealData = useCallback(async () => {
     if (simulationMode) return;
     try {
       setApiError(null);
-      // Fetch active agent ID
       const activeRes = await fetch('/api/agent/feed');
       if (!activeRes.ok) {
         throw new Error(`API returned status ${activeRes.status}`);
@@ -146,23 +141,17 @@ export default function Dashboard() {
       const feedData = await activeRes.json();
       setPosts(feedData.posts || []);
 
-      // Guess active agentId from path or response if any
-      const currentActiveId = await fetch('/api/agent/feed').then(res => res.json()).then(data => {
-        // Just extract from first post source or standard query
-        return 'active-agent';
-      }).catch(() => 'active-agent');
-
-      // Fetch rejections
       const rejectedRes = await fetch('/api/agent/rejected');
       if (rejectedRes.ok) {
         const rejectedData = await rejectedRes.json();
         setRejectedTopics(rejectedData.rejected || []);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setApiError(err.message || String(err));
+      const message = err instanceof Error ? err.message : String(err);
+      setApiError(message);
     }
-  };
+  }, [simulationMode]);
 
   // Run cycle / Trigger cron
   const triggerCronCycle = async () => {
@@ -221,8 +210,9 @@ export default function Dashboard() {
         throw new Error(`Cron trigger failed: ${res.statusText}`);
       }
       await fetchRealData();
-    } catch (err: any) {
-      setApiError(err.message || String(err));
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      setApiError(message);
     } finally {
       setIsRunningCycle(false);
     }
@@ -278,8 +268,9 @@ export default function Dashboard() {
       // Wait for background execution to catch up
       await new Promise((resolve) => setTimeout(resolve, 2500));
       await fetchRealData();
-    } catch (err: any) {
-      setApiError(err.message || String(err));
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      setApiError(message);
     } finally {
       setIsInitializing(false);
     }
@@ -294,7 +285,7 @@ export default function Dashboard() {
       setPersona({ name: 'Ada', domain: 'AI Security' });
       setApiError(null);
     }
-  }, [simulationMode]);
+  }, [simulationMode, fetchRealData]);
 
   // Copy Clipboard Helper
   const copyToClipboard = (text: string, key: string) => {
@@ -536,7 +527,7 @@ export default function Dashboard() {
                   </div>
                 ) : (
                   <AnimatePresence initial={false}>
-                    {currentPosts.map((post, idx) => {
+                    {currentPosts.map((post) => {
                       const isExpanded = expandedRationales[post.id] || false;
                       const timeStr = mounted
                         ? new Date(post.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -766,7 +757,7 @@ export default function Dashboard() {
               <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/5 rounded-full blur-2xl" />
               
               <h2 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
-                <Settings className="w-5 h-5 text-cyan-400" />
+                <Info className="w-5 h-5 text-cyan-400" />
                 Initialize Custom Agent
               </h2>
               <p className="text-slate-400 text-xs mb-5 leading-normal">

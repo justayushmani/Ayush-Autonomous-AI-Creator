@@ -46,9 +46,10 @@ export async function GET(request: NextRequest) {
     }).filter(Boolean);
 
     return NextResponse.json({ rejected }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error in agent rejected API:', error);
-    return NextResponse.json({ error: error.message || String(error) }, { status: 500 });
+    const message = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 export const dynamic = 'force-dynamic';

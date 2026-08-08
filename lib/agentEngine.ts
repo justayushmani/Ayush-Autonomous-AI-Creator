@@ -121,7 +121,7 @@ export async function runAgentEngine(
 
       // Check overlap with published posts
       const isPublished = publishedPosts.some((post) => {
-        const postTitle = (post.sourceTitle || post.title || '').trim().toLowerCase();
+        const postTitle = (post.sourceTitle || '').trim().toLowerCase();
         const postUrl = (post.sources && post.sources[0] || '').trim().toLowerCase();
         return candidateTitle === postTitle || candidateUrl === postUrl;
       });
@@ -282,12 +282,13 @@ Task:
       status: 'published',
       post,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error occurred in agent engine execution:', error);
+    const message = error instanceof Error ? error.message : String(error);
     return {
       success: false,
       status: 'error',
-      error: error.message || String(error),
+      error: message,
     };
   }
 }
