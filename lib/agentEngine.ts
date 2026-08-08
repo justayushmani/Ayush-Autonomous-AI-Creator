@@ -275,7 +275,7 @@ Task:
 
     // Prepend to posts list in Redis and save active agent ID
     await redis.lpush(postsKey, JSON.stringify(post));
-    await redis.set('agent:active_id', agentId);
+    await redis.set('agent:current_active', agentId);
 
     return {
       success: true,
