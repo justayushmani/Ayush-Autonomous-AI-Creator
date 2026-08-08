@@ -1,4 +1,4 @@
-# PROMPTS.md — AI usage / chat-style log
+# PROMPTS.md
 
 This file is a human-style usage log showing the prompts I used and the changes I asked for while building this project.
 It is written like a chat history so judges can verify the work was really driven by prompt-based development.
